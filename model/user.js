@@ -119,11 +119,65 @@ const userNewResult = (id, newElo, isWin, isDraw) => {
     )
 }
 
+const listAllUsers = () => {
+    const db = dbOpen(OPEN_READONLY)
+    const promise = new Promise((resolve, reject) => {
+        db.all(
+            'SELECT discordId, elo, matchCount, winCount, drawCount, dateCreated, dateLastSeen FROM user', 
+            (err, rows) => {
+                if (err)
+                    reject(err)
+                else
+                    resolve(rows)
+            }
+        )
+
+        db.close()
+    })
+    
+    return promise
+}
+
+const listUsers = (ids) => {
+    let where = ''
+    if (!!ids && ids.length > 0) {
+        where += ' WHERE discordId IN ('
+        for (const id of ids) {
+            where += `?,`
+        }
+        where = where.slice(0, where.length-1) + ')'
+    } else {
+        return listAllUsers()
+    }
+
+    const select = `SELECT discordId, elo, matchCount, winCount, drawCount, dateCreated, dateLastSeen FROM user ${where}`
+    console.log('Selecting : ', select, ...ids);
+
+    const db = dbOpen(OPEN_READONLY)
+    const promise = new Promise((resolve, reject) => {
+        db.all(
+            select, 
+            ...ids,
+            (err, rows) => {
+                if (err)
+                    reject(err)
+                else
+                    resolve(rows)
+            }
+        )
+
+        db.close()
+    })
+    
+    return promise
+}
+
 
 module.exports = {
     userElo,
     userCreate,
     userExists,
     userNewResult,
-    userInfo
+    userInfo,
+    listUsers
 }

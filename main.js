@@ -13,7 +13,7 @@ const client = new Discord.Client({
 let bot = {
     client,
     prefix: "!",
-    owners: [] // TODO
+    owners: ['362100663355965450'] // TODO
 }
 
 client.commands = new Discord.Collection()

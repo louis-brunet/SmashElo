@@ -29,7 +29,6 @@ module.exports = {
         console.log(tag1, tag2);
 
         if (didBothPlayersValidateResult(tag1, tag2, message, VALIDATION_EMOTE_NAME)) {
-            // TODO update db (and change result.js to not update db)
             // update db
             userNewResult(user1.id, newElo1, isWin1, isDraw)
             userNewResult(user2.id, newElo2, !isWin1 && !isDraw, isDraw)
