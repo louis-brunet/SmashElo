@@ -1,4 +1,5 @@
 require('dotenv').config()
+require('./model/db') // init db
 const Discord = require('discord.js')
 const client = new Discord.Client({
     intents: [
@@ -6,16 +7,35 @@ const client = new Discord.Client({
         "GUILD_MESSAGES"
     ]
 })
+// const CHANNEL_RESULTS = '970347885541601290'
 
-client.on('ready', () => {
-    console.log(`SmashElo bot online !\nUsername: ${client.user.tag}`)
-})
+let bot = {
+    client,
+    prefix: "!",
+    owners: [] // TODO
+}
 
-client.on('messageCreate', (msg) => {
-    if (msg.content == 'hi') {
-        msg.reply('Hello World!')
-    }
-})
+client.commands = new Discord.Collection()
+client.events = new Discord.Collection()
+
+client.loadEvents = (bot, reload) => require('./handlers/events')(bot, reload)
+client.loadCommands = (bot, reload) => require('./handlers/commands')(bot, reload)
+
+client.loadEvents(bot, false)
+client.loadCommands(bot, false)
+module.exports = bot
+
+// client.on('ready', () => {
+//     console.log(`SmashElo bot online !\nUsername: ${client.user.tag}`)
+// })
+
+// client.on('messageCreate', (msg) => {
+//     if (msg.channel.id == CHANNEL_RESULTS) {
+//         if (msg.content == 'hi') {
+//             msg.reply('Hello World!')
+//         }
+//     }
+// })
 
 
 client.login(process.env.TOKEN)
