@@ -3,6 +3,7 @@ const { computeMatchResult, DEFAULT_ELO } = require('../../util/eloSystem')
 const { userElo, userNewResult, userExists, userCreate } = require('../../model/user')
 
 const VALIDATION_EMOTE = ':white_check_mark:'
+const VALIDATION_EMOTE_NAME = '✅'
 const UNVERIFIED_INDICATOR = ':hourglass:'
 
 
@@ -15,7 +16,7 @@ const run = async ({client, message, args}) => {
         return
     }
 
-    // get p1, p2 ratings
+    // Get p1, p2 ratings. Create users if no elo.
     let elo1 = DEFAULT_ELO 
     let elo2 = DEFAULT_ELO 
 
@@ -37,19 +38,20 @@ const run = async ({client, message, args}) => {
     }
 
     // compute new ratings 
-    const { newElo1, newElo2, /*change1, change2*/ } = computeMatchResult(elo1, elo2, score1, score2)
+    const { newElo1, newElo2, change1, change2 } = computeMatchResult(elo1, elo2, score1, score2)
 
-    // update db
-    userNewResult(user1.id, newElo1, score1 > score2, score1 === score2)
-    userNewResult(user2.id, newElo2, score2 > score1, score1 === score2)
+    // // update db
+    // userNewResult(user1.id, newElo1, score1 > score2, score1 === score2)
+    // userNewResult(user2.id, newElo2, score2 > score1, score1 === score2)
 
     reply = `${UNVERIFIED_INDICATOR} ${user1} ${user2} please react with ${VALIDATION_EMOTE}\n`
     reply += '```\n'
-    reply += `${user1.tag} [${elo1} -> ${newElo1}]\n`
-    reply += `${user2.tag} [${elo2} -> ${newElo2}]\n`
+    reply += `${user1.tag}  ${score1}  [${elo1} -> ${newElo1}]  ${changeStr(change1)}\n`
+    reply += `${user2.tag}  ${score2}  [${elo2} -> ${newElo2}]  ${changeStr(change2)}\n`
     reply += '```'
 
-    message.reply(reply)
+    let resultValidationMsg = await message.reply(reply)
+    await resultValidationMsg.react(VALIDATION_EMOTE_NAME)
 }
 
 const parseArgs = (client, message, args) => {
@@ -85,14 +87,7 @@ const parseArgs = (client, message, args) => {
     return res
 }
 
-// const getUserFromMention = (mention, client) => {
-//     // const matches = mention.matchAll(USERS_PATTERN).next().value
-//     // if (!matches) return
-//     // const id = matches[1]
-//     // return client.users.cache.get(id)
-//     return member.user
-// } 
-
+const changeStr = (change) => change>=0 ? `+${change}` : `${change}`
 
 module.exports = {
     name: 'result',
@@ -100,5 +95,6 @@ module.exports = {
     permissions: [],
     devOnly: false,
     run,
-    UNVERIFIED_INDICATOR
+    UNVERIFIED_INDICATOR,
+    VALIDATION_EMOTE_NAME
 }

@@ -1,4 +1,5 @@
 const Discord = require('discord.js')
+const { UNVERIFIED_INDICATOR, VALIDATION_EMOTE_NAME } = require('../commands/general/result')
 
 module.exports = {
     name: 'messageCreate',
@@ -6,8 +7,15 @@ module.exports = {
         const { client, prefix, owners } = bot
 
         if (!message.guild) return
-        if (message.author.bot) return
         if (!message.content.startsWith(prefix)) return
+        if (message.author.bot) {
+            // if (message.author.id === client.user.id 
+            //     && message.content.includes(UNVERIFIED_INDICATOR)) {
+
+            //         message.react(VALIDATION_EMOTE_NAME)
+            //     }
+            return
+        }
 
         const args = message.content.slice(prefix.length).trim().split(/ +/g)
         const cmdstr = args.shift().toLowerCase()
