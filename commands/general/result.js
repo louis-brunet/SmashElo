@@ -3,6 +3,7 @@ const { computeMatchResult, DEFAULT_ELO } = require('../../util/eloSystem')
 const { userElo, userNewResult, userExists, userCreate } = require('../../model/user')
 
 const VALIDATION_EMOTE = ':white_check_mark:'
+const UNVERIFIED_INDICATOR = ':hourglass:'
 
 
 const run = async ({client, message, args}) => {
@@ -42,12 +43,11 @@ const run = async ({client, message, args}) => {
     userNewResult(user1.id, newElo1, score1 > score2, score1 === score2)
     userNewResult(user2.id, newElo2, score2 > score1, score1 === score2)
 
-
-    reply = '```css\n'
+    reply = `${UNVERIFIED_INDICATOR} ${user1} ${user2} please react with ${VALIDATION_EMOTE}\n`
+    reply += '```\n'
     reply += `${user1.tag} [${elo1} -> ${newElo1}]\n`
     reply += `${user2.tag} [${elo2} -> ${newElo2}]\n`
     reply += '```'
-    reply += `${user1} ${user2} please react with ${VALIDATION_EMOTE}`
 
     message.reply(reply)
 }
@@ -99,5 +99,6 @@ module.exports = {
     category: 'general',
     permissions: [],
     devOnly: false,
-    run
+    run,
+    UNVERIFIED_INDICATOR
 }

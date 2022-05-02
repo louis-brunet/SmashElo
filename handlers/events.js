@@ -47,5 +47,13 @@ function initEvents(bot) {
     client.on('messageCreate', (message) => {
         triggerEventHandler(bot, 'messageCreate', message)
     })
+
+    client.on('messageReactionAdd', (messageReaction, user) => {
+        triggerEventHandler(bot, 'messageReactionAdd', messageReaction, user)
+    })
+
+    client.on('messageReactionRemove', (messageReaction, user) => {
+        triggerEventHandler(bot, 'messageReactionRemove', messageReaction, user)
+    })
 }
 

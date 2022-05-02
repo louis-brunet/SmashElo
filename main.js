@@ -4,7 +4,8 @@ const Discord = require('discord.js')
 const client = new Discord.Client({
     intents: [
         "GUILDS",
-        "GUILD_MESSAGES"
+        "GUILD_MESSAGES",
+        "GUILD_MESSAGE_REACTIONS",
     ]
 })
 // const CHANNEL_RESULTS = '970347885541601290'
