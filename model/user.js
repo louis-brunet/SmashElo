@@ -166,14 +166,14 @@ const deleteAllUsers = () => {
     return promise
 }
 
-const userNewResult = async (id, newElo, isWin, isDraw) => {
-    console.log(`Trying to add new result (id=${id}, newElo=${newElo}, isWon=${isWin})`);
+const userNewResult = (id, change, isWin, isDraw) => {
+    console.log(`Trying to add new result (id=${id}, change=${(change >= 0 ? '+':'')+change}, isWon=${isWin})`);
 
     const db = dbOpen(OPEN_READWRITE)
     const promise = new Promise((resolve, reject) => {
 
         db.get(
-            'SELECT matchCount, winCount, drawCount FROM user WHERE discordId = ?', 
+            'SELECT elo, matchCount, winCount, drawCount FROM user WHERE discordId = ?', 
             id, 
             (err, row) => {
                 if (err)
@@ -182,15 +182,18 @@ const userNewResult = async (id, newElo, isWin, isDraw) => {
                     const matchCount = row?.['matchCount']
                     let winCount = row?.['winCount']
                     let drawCount = row?.['drawCount']
+                    let elo = row?.['elo']
 
                     if (isWin) 
                         winCount++
                     else if (isDraw)
                         drawCount++
+                    if (elo)
+                        elo += change
 
                     db.run(
                         "UPDATE user SET (elo, matchCount, winCount, drawCount, dateLastSeen) = (?, ?, ?, ?, datetime('now', 'localtime')) WHERE discordId = ?", 
-                        [newElo, matchCount + 1, winCount, drawCount, id],
+                        [elo, matchCount + 1, winCount, drawCount, id],
                         (err) => {
                             if (err) reject(err)
                             else resolve()

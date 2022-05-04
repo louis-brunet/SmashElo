@@ -25,6 +25,12 @@ module.exports = {
         }
         const { commands } = validated
         const cmdName = commands[0]
+
+        const cmd = client.commands.get(cmdName)
+        if (cmd && cmd.devOnly) {
+            message.reply(`Command \`${cmdName}\` is limited to devs.`)
+            return
+        } 
         
         let roleIds = []
         try {

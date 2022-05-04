@@ -25,6 +25,7 @@ const parseResultValidationMessage = (message) => {
     const tags = []
     const newElos = []
     const scores = []
+    const changes = []
 
     const lines = message.content.split('\n')
 
@@ -38,10 +39,16 @@ const parseResultValidationMessage = (message) => {
         })
 
         if (isResultLine) {
-            const match = line.match(/^.{3,32}#[0-9]{4} +[0-9]+/)?.[0]
-            if (match) {
-                const score = parseInt(match.split(' ').at(-1), 10)
+            const scoreMatch = line.match(/^.{3,32}#[0-9]{4} +[0-9]+/)?.[0]
+            if (scoreMatch) {
+                const score = parseInt(scoreMatch.split(' ').at(-1), 10)
                 scores.push(score)
+            }
+
+            const changeMatch = line.match(/(\+|-)[0-9]+$/)?.[0]
+            if (changeMatch) {
+                const change = parseInt(changeMatch, 10)
+                changes.push(change)
             }
         }
         
@@ -62,11 +69,18 @@ const parseResultValidationMessage = (message) => {
         return undefined
     }
 
+    if (changes.length < 2) {
+        console.error('messageReactionAdd.parseMessage : could not find at least 2 changes')
+        return undefined
+    }
+
     return {
         tag1: tags[0],
         tag2: tags[1],
         newElo1: newElos[0],
         newElo2: newElos[1],
+        change1: changes[0],
+        change2: changes[1],
         isWin1: scores[0] > scores[1],
         isDraw: scores[0] === scores [1]
     }

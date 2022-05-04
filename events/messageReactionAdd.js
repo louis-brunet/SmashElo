@@ -17,7 +17,7 @@ module.exports = {
             return
         }
 
-        const { tag1, tag2, isWin1, isDraw, newElo1, newElo2 } = parseResultValidationMessage(message)
+        const { tag1, tag2, isWin1, isDraw, change1, change2 } = parseResultValidationMessage(message)
         const user1 = bot.client.users.cache.find(u=>u.tag.toLowerCase()===tag1)
         const user2 = bot.client.users.cache.find(u=>u.tag.toLowerCase()===tag2)
 
@@ -30,8 +30,8 @@ module.exports = {
 
         if (didBothPlayersValidateResult(tag1, tag2, message, VALIDATION_EMOTE_NAME)) {
             // update db
-            userNewResult(user1.id, newElo1, isWin1, isDraw)
-            userNewResult(user2.id, newElo2, !isWin1 && !isDraw, isDraw)
+            userNewResult(user1.id, change1, isWin1, isDraw)
+            userNewResult(user2.id, change2, !isWin1 && !isDraw, isDraw)
 
             let newContent = '```css' + message.content.split('```').slice(1).join('```')
             message.edit(newContent)
