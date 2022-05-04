@@ -18,9 +18,10 @@ const canAnyRoleUseCmd = async (roles, cmd) => {
     return true
 }
 
-const canMemberUseCmd = async (member, cmd) => {
-    const missingPerms = cmd.permissions && member.permissions.missing(cmd.permissions).length !== 0 
-    return !missingPerms && await canAnyRoleUseCmd(Array.from(member?.roles?.cache?.values()), cmd)
+const canMemberUseCmd = async (member, cmd, owners) => {
+    const missingDevAccess = cmd.devOnly && !owners?.includes?.(member?.id)
+    const missingPerms = cmd?.permissions && member?.permissions?.missing?.(cmd?.permissions)?.length !== 0 
+    return !missingDevAccess && !missingPerms && await canAnyRoleUseCmd(Array.from(member?.roles?.cache?.values()), cmd)
 }
 
 module.exports = {
@@ -42,11 +43,11 @@ module.exports = {
 
         let member = message.member
 
-        if (command.devOnly && !owners.includes(member.id)) {
-            return message.reply('This command is only available to the bot owners')
-        }
+        // if (command.devOnly && !owners.includes(member.id)) {
+        //     return message.reply('This command is only available to the bot owners')
+        // }
 
-        if ( ! await canMemberUseCmd(member, command) ) {
+        if ( ! await canMemberUseCmd(member, command, owners) ) {
             return message.reply("You do not have permission to use this command")
         }
 

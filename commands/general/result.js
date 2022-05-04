@@ -64,20 +64,19 @@ const parseArgs = (client, message, args) => {
     }
 
     if (message.mentions.members.size !== 2) {
-        res.error = "Please tag both players (@player1 @player2)."
+        res.error = "Usage: !result @user1 @user2 score1 score2"
+        // res.error = "Please tag both players (@player1 @player2)."
         return res
     }
 
-    // const mentioned = message.mentions.members.values()
     res.user1 = message.mentions.members.at(0).user
     res.user2 = message.mentions.members.at(1).user
-    // res.user1 = getUserFromMention(mentioned.next())
-    // res.user2 = getUserFromMention(mentioned.next())
 
     console.log('args before regex filter : ', args)
     const scores = args.filter(a => /^\d{1,3}$/.test(a) )
     if (scores.length !== 2) {
-        res.error = "Please write both scores as integers (1-3 digits)."
+        res.error = "Usage: !result @user1 @user2 score1 score2"
+        // res.error = "Please write both scores as integers (1-3 digits)."
         return res
     }
 
