@@ -12,15 +12,13 @@ In the list below, commands in *italics* are recommended to be role-restricted.
 
 * `help` show basic help for new users
 
-<!-- * `help <command>`  -->
-
 * `elo` get elo for user who used command
 
 * `elo <user> <user> ....` get elo for mentioned user(s) (@user user#1234)
 
 * `result @user1 @user2 score1 score2` add a new ranked match result. The result will be pushed to the database when both players react with the validation emoji. When the result is validated, the only way to revert it is with the `edit` command.
 
-* *`list`* list data for all users
+* *`list`* list data for all users. The times shown are UTC.
 
 * *`list <user> <user> ...`* list data for mentioned user(s) (@user or user#1234)
 
