@@ -1,5 +1,27 @@
 const Discord = require('discord.js')
-const { UNVERIFIED_INDICATOR, VALIDATION_EMOTE_NAME } = require('../commands/general/result')
+const { getCommandRoles } = require('../model/permissions')
+
+// const { UNVERIFIED_INDICATOR, VALIDATION_EMOTE_NAME } = require('../commands/general/result')
+
+const canAnyRoleUseCmd = async (roles, cmd) => {
+    const cmdRoleIds = await getCommandRoles(cmd?.name)
+    // console.log('messageCreated.canAnyRoleUseCmd: cmdRoleIds = ', cmdRoleIds);
+    // console.log('messageCreated.canAnyRoleUseCmd: roles = ', roles);
+    if (cmdRoleIds?.length) {
+        if (roles?.length) {
+            // console.log('messageCreated.canAnyRoleUseCmd: returning ', roles.some(role=>cmdRoleIds?.includes?.(role.id)));
+            return roles.some(role=>cmdRoleIds?.includes?.(role.id))
+        }
+
+        return false
+    } 
+    return true
+}
+
+const canMemberUseCmd = async (member, cmd) => {
+    const missingPerms = cmd.permissions && member.permissions.missing(cmd.permissions).length !== 0 
+    return !missingPerms && await canAnyRoleUseCmd(Array.from(member?.roles?.cache?.values()), cmd)
+}
 
 module.exports = {
     name: 'messageCreate',
@@ -9,11 +31,6 @@ module.exports = {
         if (!message.guild) return
         if (!message.content.startsWith(prefix)) return
         if (message.author.bot) {
-            // if (message.author.id === client.user.id 
-            //     && message.content.includes(UNVERIFIED_INDICATOR)) {
-
-            //         message.react(VALIDATION_EMOTE_NAME)
-            //     }
             return
         }
 
@@ -29,7 +46,7 @@ module.exports = {
             return message.reply('This command is only available to the bot owners')
         }
 
-        if (command.permissions && member.permissions.missing(command.permissions).length !== 0) {
+        if ( ! await canMemberUseCmd(member, command) ) {
             return message.reply("You do not have permission to use this command")
         }
 

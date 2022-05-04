@@ -2,6 +2,7 @@ const { getFiles } = require('../util/functions')
 
 module.exports = (bot, reload) => {
     const { client } = bot
+    // console.log(`loadEvents: client = `, client);
     let events = getFiles('./events/', '.js')
 
     if (events.length === 0) {

@@ -101,9 +101,23 @@ const getTargetUsers = (client, message, args) => {
     return targets
 }
 
+const isCommand = (client, str) => {
+    return client?.commands?.has?.(str?.toLowerCase?.())
+}
+
+const roleIdToName = (id, roles) => {
+    for (const role of roles)
+        if (id == role?.id)
+            return role?.name
+
+    return undefined
+}
+
 module.exports = {
     getFiles,
     didBothPlayersValidateResult,
     parseResultValidationMessage,
-    getTargetUsers
+    getTargetUsers,
+    isCommand,
+    roleIdToName
 }

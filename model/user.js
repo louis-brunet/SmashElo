@@ -88,42 +88,107 @@ const userCreate = (id) => {
     db.close()
 }
 
-const userNewResult = (id, newElo, isWin, isDraw) => {
+const userDelete = (ids) => {
+    if (!ids || !ids.length) return
+
+    console.log(`Trying to delete users (ids=${ids})`);
+    const db = dbOpen(OPEN_READWRITE)
+
+    let query = 'DELETE FROM user WHERE discordId IN (' 
+    const queryParams = []
+
+    for (const id of ids) {
+        query += `?,`
+        queryParams.push(id)
+    }
+    query = query.slice(0, query.length - 1)
+    query += ')'
+    
+    const promise = new Promise((resolve, reject) => {
+        db.run(
+            query, 
+            ...queryParams, 
+            (err) => {
+                if (err)
+                    reject(err)
+                else
+                    resolve()
+            }
+        )
+
+        db.close()
+    })
+    
+    return promise
+}
+
+const deleteAllUsers = () => {
+    console.log(`Trying to delete all users`);
+    const db = dbOpen(OPEN_READWRITE)
+
+    let query = 'DELETE FROM user' 
+    
+    const promise = new Promise((resolve, reject) => {
+        db.run(
+            query, 
+            (err) => {
+                if (err)
+                    reject(err)
+                else
+                    resolve()
+            }
+        )
+
+        db.close()
+    })
+    
+    return promise
+}
+
+const userNewResult = async (id, newElo, isWin, isDraw) => {
     console.log(`Trying to add new result (id=${id}, newElo=${newElo}, isWon=${isWin})`);
 
     const db = dbOpen(OPEN_READWRITE)
-    db.get(
-        'SELECT matchCount, winCount, drawCount FROM user WHERE discordId = ?', 
-        id, 
-        (err, row) => {
-            if (err)
-                throw err // TODO handle
-            else {
-                const matchCount = row?.['matchCount']
-                let winCount = row?.['winCount']
-                let drawCount = row?.['drawCount']
+    const promise = new Promise((resolve, reject) => {
 
-                if (isWin) 
-                    winCount++
-                else if (isDraw)
-                    drawCount++
+        db.get(
+            'SELECT matchCount, winCount, drawCount FROM user WHERE discordId = ?', 
+            id, 
+            (err, row) => {
+                if (err)
+                    reject(err) // TODO handle
+                else {
+                    const matchCount = row?.['matchCount']
+                    let winCount = row?.['winCount']
+                    let drawCount = row?.['drawCount']
 
-                db.run(
-                    'UPDATE user SET (elo, matchCount, winCount, drawCount) = (?, ?, ?, ?) WHERE discordId = ?', 
-                    [newElo, matchCount + 1, winCount, drawCount, id]
-                )
+                    if (isWin) 
+                        winCount++
+                    else if (isDraw)
+                        drawCount++
+
+                    db.run(
+                        'UPDATE user SET (elo, matchCount, winCount, drawCount) = (?, ?, ?, ?) WHERE discordId = ?', 
+                        [newElo, matchCount + 1, winCount, drawCount, id],
+                        (err) => {
+                            if (err) reject(err)
+                            else resolve()
+                        }
+                    )
+                }
+
+                db.close()
             }
-
-            db.close()
-        }
-    )
+        )
+    })
+    return promise
 }
 
 const listAllUsers = () => {
     const db = dbOpen(OPEN_READONLY)
     const promise = new Promise((resolve, reject) => {
         db.all(
-            'SELECT discordId, elo, matchCount, winCount, drawCount, dateCreated, dateLastSeen FROM user', 
+            'SELECT discordId, elo, matchCount, winCount, drawCount, dateCreated, dateLastSeen FROM user ORDER BY elo DESC', 
             (err, rows) => {
                 if (err)
                     reject(err)
@@ -150,8 +215,8 @@ const listUsers = (ids) => {
         return listAllUsers()
     }
 
-    const select = `SELECT discordId, elo, matchCount, winCount, drawCount, dateCreated, dateLastSeen FROM user ${where}`
-    console.log('Selecting : ', select, ...ids);
+    const select = `SELECT discordId, elo, matchCount, winCount, drawCount, dateCreated, dateLastSeen FROM user ${where} ORDER BY elo DESC`
+    // console.log('Selecting : ', select, ...ids);
 
     const db = dbOpen(OPEN_READONLY)
     const promise = new Promise((resolve, reject) => {
@@ -176,8 +241,10 @@ const listUsers = (ids) => {
 module.exports = {
     userElo,
     userCreate,
+    userDelete,
     userExists,
     userNewResult,
     userInfo,
-    listUsers
+    listUsers,
+    deleteAllUsers
 }

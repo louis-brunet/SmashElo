@@ -1,44 +1,8 @@
-const { userInfo } = require('../../model/user')
 const { DEFAULT_ELO } = require('../../util/eloSystem')
+const { userInfo } = require('../../model/user')
 const { getTargetUsers } = require('../../util/functions')
 
-// const getTargetUsers = (client, message, args) => {
-//     console.log(`size=${message.mentions.members.size} ; entries = ${message.mentions.members.entries()}`)
-//     const targets = []
-
-//     if (message.mentions.members.size > 0) {
-//         message.mentions.members.forEach( member => {
-//             targets.push(member.user)
-//         })
-//     }
-
-//     const tags = []
-//     for (const arg of args) {
-//         if (/^.{3,32}#[0-9]{4}$/.test(arg)) {
-//             tags.push(arg.toLowerCase())
-//         }
-//     }
-    
-//     if (tags.length > 0) {
-//         // console.log(`tags: ${tags}; returning ${client.users.cache.filter(u =>tags.includes(u.tag.toLowerCase())).values()}`)
-//         client.users.cache.forEach(u => {
-//             if (tags.includes(u.tag.toLowerCase())) {
-//                 targets.push(u)
-//             }
-//         })
-//     }
-
-//     if (targets.length === 0) {
-//         targets.push(message.author)
-//     }
-
-//     return targets
-// }
-
 const run = async ({client, message, args}) => {
-    // if (!validateArgs(args))
-    //     return
-
     const targets = getTargetUsers(client, message, args)
     
     if (targets.length === 0) {

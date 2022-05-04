@@ -3,9 +3,9 @@ const { getTargetUsers } = require('../../util/functions')
 
 module.exports = {
     name: 'list',
-    category: 'admin',
+    category: 'role_locked',
     permissions: [],
-    devOnly: true,
+    devOnly: false,
     run: async ({client, message, args}) => {
         const userIds = getTargetUsers(client, message, args).map(u=>u.id)
         const rows = await listUsers(userIds)
@@ -17,13 +17,9 @@ module.exports = {
         let reply = '```\ntag, elo, matchCount, winCount, drawCount, dateCreated, dateLastSeen:\n\n'
 
         for (const row of rows) {
-            // const user = message.guild.members.cache.get(''+row['discordId'])
             const user = client.users.cache.get(row['discordId'])
             if (!user) {
-                // if (row['discordId'] === client.user.id)
-                //     user = client.user
-                // else 
-                    reply += `Failed to fetch user (id=${row['discordId']})\n`
+                reply += `Failed to fetch user (id=${row['discordId']})\n`
             }
             if (user) {
                 const tag = user.tag
