@@ -6,9 +6,9 @@
  *      elo         INTEGER NOT NULL
  *      dateCreated DATETIME DEFAULT current_timestamp NOT NULL
  *      dateLastSeenDATETIME DEFAULT current_timestamp NOT NULL
- *      matchCount  INTEGER DEFAULT 0
- *      winCount    INTEGER DEFAULT 0
- *      drawCount   INTEGER DEFAULT 0
+ *      matchCount  INTEGER DEFAULT 0 NOT NULL
+ *      winCount    INTEGER DEFAULT 0 NOT NULL
+ *      drawCount   INTEGER DEFAULT 0 NOT NULL
  * 
  * command_role
  *      cmdName        TEXT
@@ -28,7 +28,9 @@ const dbOpen = (mode = sqlite.OPEN_CREATE | sqlite.OPEN_READWRITE, fileName = DB
 
 const dbInit = () => {
     const db = dbOpen()
-    db.run("CREATE TABLE IF NOT EXISTS user (discordId TEXT PRIMARY KEY, elo INTEGER NOT NULL, dateCreated DATETIME DEFAULT current_timestamp NOT NULL, matchCount INTEGER DEFAULT 0, winCount INTEGER DEFAULT 0, drawCount INTEGER DEFAULT 0, dateLastSeen DATETIME DEFAULT current_timestamp NOT NULL);");
+    db.run(
+        "CREATE TABLE IF NOT EXISTS user (discordId TEXT PRIMARY KEY, elo INTEGER NOT NULL, dateCreated DATETIME DEFAULT current_timestamp NOT NULL, matchCount INTEGER DEFAULT 0 NOT NULL, winCount INTEGER DEFAULT 0 NOT NULL, drawCount INTEGER DEFAULT 0 NOT NULL, dateLastSeen DATETIME DEFAULT current_timestamp NOT NULL);"
+    );
     db.run("CREATE TABLE IF NOT EXISTS command_role (cmdName TEXT, roleId TEXT, PRIMARY KEY (cmdName, roleId));");
     db.close()
 } 

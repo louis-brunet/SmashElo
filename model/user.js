@@ -122,6 +122,27 @@ const userDelete = (ids) => {
     return promise
 }
 
+const userEdit = (id, elo, matchCount, winCount, drawCount) => {
+    console.log(`Trying to edit user (id, elo, matchCount, winCount, drawCount) = ${id}, ${elo}, ${matchCount}, ${winCount}, ${drawCount}`);
+    const db = dbOpen(OPEN_READWRITE)
+    const promise = new Promise((resolve, reject) => {
+        db.run(
+            'UPDATE user SET (elo, matchCount, winCount, drawCount) = (?,?,?,?) WHERE discordId = ?',
+            [elo, matchCount, winCount, drawCount, id],
+            (err) => {
+                if (err)
+                    reject(err)
+                else
+                    resolve()
+            }
+        )
+
+        db.close()
+    })
+    
+    return promise
+}
+
 const deleteAllUsers = () => {
     console.log(`Trying to delete all users`);
     const db = dbOpen(OPEN_READWRITE)
@@ -168,7 +189,7 @@ const userNewResult = async (id, newElo, isWin, isDraw) => {
                         drawCount++
 
                     db.run(
-                        'UPDATE user SET (elo, matchCount, winCount, drawCount) = (?, ?, ?, ?) WHERE discordId = ?', 
+                        "UPDATE user SET (elo, matchCount, winCount, drawCount, dateLastSeen) = (?, ?, ?, ?, datetime('now', 'localtime')) WHERE discordId = ?", 
                         [newElo, matchCount + 1, winCount, drawCount, id],
                         (err) => {
                             if (err) reject(err)
@@ -242,6 +263,7 @@ module.exports = {
     userElo,
     userCreate,
     userDelete,
+    userEdit,
     userExists,
     userNewResult,
     userInfo,

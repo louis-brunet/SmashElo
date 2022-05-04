@@ -10,7 +10,7 @@ In the list below, commands in *italics* are recommended to be role-restricted.
 
 ## General commands
 
-* `help` show help for new users
+* `help` show basic help for new users
 
 <!-- * `help <command>`  -->
 
@@ -18,7 +18,7 @@ In the list below, commands in *italics* are recommended to be role-restricted.
 
 * `elo <user> <user> ....` get elo for mentioned user(s) (@user user#1234)
 
-* `result @user1 @user2 score1 score2` add a new ranked match result
+* `result @user1 @user2 score1 score2` add a new ranked match result. The result will be pushed to the database when both players react with the validation emoji. When the result is validated, the only way to revert it is with the `edit` command.
 
 * *`list`* list data for all users
 
@@ -47,7 +47,7 @@ Each player has an Elo rating. The amount of rating points won or lost after a m
 
 ![Elo rating formulas](/img/elo.png)
 
-The constant K is set to 32. Changing it will modify the average amount of elo gained per match (regardless of ratings).
+The constant K is set to 32. Changing it will modify the maximum (and the average) amount of elo gained per match.
 
 The scale factor is set to 400. Changing it will modify the impact of the rating difference on the amount of points gained.
 
