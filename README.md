@@ -41,7 +41,7 @@ In the list below, commands in *italics* are recommended to be role-restricted.
 
 ## Elo system
 
-Each player has an Elo rating. The amount of rating points won or lost after a match depends only on the rating difference between both players (the scoreline currently has no effect). 
+Each player has an Elo rating. The amount of rating points won or lost after a match depends only on the rating difference between both players. The scoreline currently has no effect on the amount of points gained. 
 
 ![Elo rating formulas](/img/elo.png)
 
